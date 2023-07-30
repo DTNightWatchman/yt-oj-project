@@ -23,7 +23,7 @@ router.beforeEach((to, from, next) => {
   // 仅管理员可见
   if (
     to.meta?.access === "canAdmin" &&
-    store.state.user.loginUser?.role != null
+    store.state.user.loginUser?.userRole != null
   ) {
     next("/noAuth");
     return;
