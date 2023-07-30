@@ -68,6 +68,13 @@ const doMenuClick = (key: string) => {
 
 const store = useStore();
 console.log(store.state);
+
+// setTimeout(() => {
+//   store.dispatch("user/getLoginUser", {
+//     username: "摆渡人",
+//     role: "admin",
+//   });
+// }, 3000);
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -9,12 +9,14 @@ export default {
   state: () => ({
     loginUser: {
       username: "未登录",
+      role: "notLogin",
     },
   }),
   getters,
   actions: {
     getLoginUser({ commit, state }, paylaod) {
-      commit("updateUser", { userName: "YT" });
+      // todo 缓存请求服务端获取用户信息
+      commit("updateUser", { username: "YT" });
     },
   },
   mutations: {
