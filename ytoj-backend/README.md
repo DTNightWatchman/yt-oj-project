@@ -1,12 +1,12 @@
-# SpringBoot 项目初始模板
+# 在线OJ项目2.0后端
 
 > 作者：[YTbaiduren](https://github.com/DTNightWatchman)
 
-基于 Java SpringBoot 的项目初始模板，整合了常用框架和主流业务的示例代码。
+基于 Java SpringBoot 的在线oj做题项目，基于之前 在线oj的后端理论基础上进行开发。
 
 [toc]
 
-## 模板特点
+## 集成框架
 
 ### 主流框架 & 特性
 
@@ -64,10 +64,6 @@
 - JUnit5 单元测试
 - 示例单元测试类
 
-### 架构设计
-
-- 合理分层
-
 
 ## 快速上手
 
@@ -88,7 +84,7 @@ spring:
 
 2）执行 `sql/create_table.sql` 中的数据库语句，自动创建库表
 
-3）启动项目，访问 `http://localhost:8101/api/doc.html` 即可打开接口文档，不需要写前端就能在线调试接口了~
+3）启动项目，访问 `http://localhost:8123/api/doc.html` 打开接口文档.
 
 ![](doc/swagger.png)
 
