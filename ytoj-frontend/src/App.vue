@@ -1,34 +1,30 @@
 <template>
   <div id="app">
-    <BasicLayout />
+    <template v-if="route.path.startsWith('/user')">
+      <UserLayout />
+    </template>
+    <template v-else>
+      <BasicLayout />
+    </template>
   </div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  //text-align: center; color: #2c3e50;
-}
-</style>
+<style></style>
 <script setup lang="ts">
 import BasicLayout from "@/layouts/BasicLayout.vue";
-import { useRouter } from "vue-router";
-import { useStore } from "vuex";
+import { onMounted } from "vue";
+import { useRoute } from "vue-router";
+import UserLayout from "@/layouts/UserLayout.vue";
 
-const router = useRouter();
-const store = useStore();
-router.beforeEach((to, from, next) => {
-  // 仅管理员可见
-  if (
-    to.meta?.access === "canAdmin" &&
-    store.state.user.loginUser?.userRole != null
-  ) {
-    next("/noAuth");
-    return;
-  }
-  next();
-  console.log(to);
+const route = useRoute();
+/**
+ * 全局初始化，全局单次调用的代码
+ */
+const doInit = () => {
+  console.log("hello 初始化");
+};
+
+onMounted(() => {
+  doInit();
 });
 </script>

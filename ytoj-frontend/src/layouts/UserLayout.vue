@@ -1,21 +1,6 @@
 <template>
   <div id="userLayout">
-    <a-layout style="min-height: 100vh">
-      <a-layout-header class="header">
-        <LoginHeader />
-      </a-layout-header>
-      <a-layout-content class="content">
-        <router-view />
-      </a-layout-content>
-      <a-layout-footer class="footer">
-        <a-link href="https://gitee.com/YTbaiduren/yt-oj-project">
-          <template #icon>
-            <icon-github />
-          </template>
-          YT OJ by YT摆渡人
-        </a-link>
-      </a-layout-footer>
-    </a-layout>
+    <router-view />
   </div>
 </template>
 
