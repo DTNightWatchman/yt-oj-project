@@ -1,7 +1,5 @@
 <template>
-  <div id="userLayout">
-    <router-view />
-  </div>
+  <router-view />
 </template>
 
 <style scoped>
