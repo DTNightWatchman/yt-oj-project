@@ -20,7 +20,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/db_ytoj
     username: root
-    password: 123456
+    password: 1111
   # Redis 配置
   # todo 需替换配置，然后取消注释
 #  redis:
@@ -79,7 +79,12 @@ wx:
   open:
     appId: xxx
     appSecret: xxx
-# 对象存储
+# 对象存储 使用minio
+minio:
+  endpoint: http://127.0.0.1:9000
+  accessKey: oj-project-user
+  secretKey: password
+  bucketName: oj-object-bucket
 # todo 需替换配置
 cos:
   client:
