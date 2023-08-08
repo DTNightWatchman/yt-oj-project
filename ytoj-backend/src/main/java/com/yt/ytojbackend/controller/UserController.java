@@ -6,7 +6,6 @@ import com.yt.ytojbackend.common.BaseResponse;
 import com.yt.ytojbackend.common.DeleteRequest;
 import com.yt.ytojbackend.common.ErrorCode;
 import com.yt.ytojbackend.common.ResultUtils;
-import com.yt.ytojbackend.config.WxOpenConfig;
 import com.yt.ytojbackend.constant.UserConstant;
 import com.yt.ytojbackend.exception.BusinessException;
 import com.yt.ytojbackend.exception.ThrowUtils;
@@ -50,9 +49,6 @@ public class UserController {
 
     @Resource
     private UserService userService;
-
-    @Resource
-    private WxOpenConfig wxOpenConfig;
 
     // region 登录相关
 
