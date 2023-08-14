@@ -49,10 +49,15 @@
 <script setup lang="ts">
 import { routes } from "@/router/routes";
 import { useRoute, useRouter } from "vue-router";
-import { computed, ref, watch, watchEffect } from "vue";
+import { computed, onMounted, ref, watch, watchEffect } from "vue";
 import { useStore } from "vuex";
 import checkAccess from "@/access/checkAccess";
 import ACCESS_ENUM from "@/access/accessEnum";
+import {
+  BaseResponse_LoginUserVO_,
+  UserControllerService,
+} from "../../generated";
+import message from "@arco-design/web-vue/es/message";
 
 const store = useStore();
 const router = useRouter();
@@ -91,18 +96,31 @@ const doMenuClick = (key: string) => {
 
 console.log(store.state);
 
-setTimeout(() => {
-  console.log(visibleRoutes.value);
-  store.dispatch("user/getLoginUser", {
-    userName: "摆渡人",
-    userRole: ACCESS_ENUM.ADMIN,
-  });
-  console.log(store.state.user.loginUser);
-}, 3000);
-
-setTimeout(() => {
-  console.log("???", visibleRoutes.value);
-}, 6000);
+onMounted(async () => {
+  try {
+    const res: BaseResponse_LoginUserVO_ =
+      await UserControllerService.getLoginUserUsingGet();
+    if (res.code === 0) {
+      await store.dispatch("user/getLoginUser", {
+        userName: res.data?.userName,
+        userRole: res.data?.userRole,
+      });
+      await router.push("/");
+    } else {
+      message.error("登录失败:" + res.message);
+    }
+  } catch (e) {
+    message.error("登录服务异常");
+  }
+});
+// setTimeout(() => {
+//   console.log(visibleRoutes.value);
+//   store.dispatch("user/getLoginUser", {
+//     userName: "摆渡人",
+//     userRole: ACCESS_ENUM.ADMIN,
+//   });
+//   console.log(store.state.user.loginUser);
+// }, 3000);
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

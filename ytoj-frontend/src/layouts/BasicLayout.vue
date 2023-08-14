@@ -24,6 +24,8 @@
 }
 
 #basicLayout .header {
+  position: sticky;
+  bottom: 0;
   box-shadow: rgb(239, 239, 239) 1px 1px 1px;
 }
 

@@ -55,11 +55,16 @@ import {
   UserLoginRequest,
 } from "../../../generated";
 import message from "@arco-design/web-vue/es/message";
+import { useRouter } from "vue-router";
+import store from "@/store";
 
 const form = reactive({
   userAccount: "",
   userPassword: "",
 } as UserLoginRequest);
+
+const router = useRouter();
+
 /**
  * 提交表单
  * @param data
@@ -70,6 +75,11 @@ const handleSubmit = async () => {
       await UserControllerService.userLoginUsingPost(form);
     if (res.code === 0) {
       message.success("登录成功:" + res.data);
+      await store.dispatch("user/getLoginUser", {
+        userName: res.data?.userName,
+        userRole: res.data?.userRole,
+      });
+      await router.push("/");
     } else {
       message.error("登录失败:" + res.message);
     }

@@ -39,3 +39,96 @@ Vue3，Java进程控制，虚拟机，Docker，消息队列
 > https://arco.design/react/docs/start
 
 使用vue-router动态路由
+
+使用vuex全局状态管理
+
+## 2023-7-30
+
+使用vue-router的权限管理
+
+需要在全局页面组件中，绑定一个全局路由监听，每次访问页面的时候，根据用户需要访问的页面的路由信息，先判断用户是否有访问权限
+
+如果有，跳转，如果没有，就拦截或者是跳转到403或者401鉴权或者是登录页面
+
+##### 如何根据权限隐藏菜单
+
+在 routers.ts 中给路由新增一个标志位，用于判断路由是否显隐
+
+不要使用v-if + v-for 去进行条件渲染，会导致性能的浪费
+
+所以先过滤需要展示的页面
+
+需要抽象出一个全局的权限管理
+
+
+
+后端项目初始化
+
+然后后端暴露swagger接口，然后使用代码生成工具构建请求函数
+
+> https://github.com/ferdikoomen/openapi-typescript-codegen
+
+```
+openapi --input http://localhost:8123/api/v2/api-docs --output ./generated --client axios
+```
+
+## 2023-8-7
+
+数据库字段：
+
+使用 judgeConfig 判题配置（json对象）
+
+- 时间限制 timeLimit
+- 内存限制 memoryLimit
+
+judge 判题用例（json数组）
+
+每个元素是：一个输入用例和一个输出用例
+
+```json
+[
+    {
+        "input": "1 2",
+        "output": "3 4"
+    },
+    {
+        "input": "1 3",
+        "output": "2 4"
+    }
+]
+```
+
+存json的前提：
+
+1. 不需要根据json中的某个字段去查询这条数据
+2. 你的字段含义相关，属于同一类的值
+3. 你的字段存储空间不能占用太大
+
+判题信息：
+
+```json
+judgeInfo
+{
+    "message": "执行信息",
+    "time": 1000, // ms
+    "memory": 1000 // kb
+}
+```
+
+判题枚举值：
+
+- Accepted 成功
+- Wrong Answer 失败错误
+- Compile Error 编译错误
+- Memory Limit Exceeded 内存溢出
+- Time Limit Exceeded 超时
+- Presentation Error 展示错误
+- Output Limit Exceeded 输出溢出
+- Waiting 等待中
+- Dangerous Operation 危险操作
+- Runtime Error 运行错误（用户程序问题）
+- System Error 系统错误（系统内的问题）
+
+## 2023-8-8
+
+编写独立的实体类entity，DTO，VO等

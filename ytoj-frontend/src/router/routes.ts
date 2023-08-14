@@ -7,12 +7,12 @@ import ACCESS_ENUM from "@/access/accessEnum";
 import UserLayout from "@/layouts/UserLayout.vue";
 import UserLoginView from "@/views/user/UserLoginView.vue";
 import UserRegisterView from "@/views/user/UserRegisterView.vue";
+import HelloWorld from "@/components/HelloWorld.vue";
 
 export const routes: Array<RouteRecordRaw> = [
   {
     path: "/user",
     name: "用户",
-    component: UserLayout,
     children: [
       {
         path: "/user/login",
@@ -25,11 +25,19 @@ export const routes: Array<RouteRecordRaw> = [
         component: UserRegisterView,
       },
     ],
+    meta: {
+      hideInMenu: true,
+    },
   },
   {
     path: "/",
     name: "题目",
     component: HomeView,
+  },
+  {
+    path: "/hello",
+    name: "hello",
+    component: HelloWorld,
   },
   {
     path: "/admin",
