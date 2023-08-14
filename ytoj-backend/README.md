@@ -137,12 +137,12 @@ spring:
     password: 123456
 ```
 
-2）复制 `sql/post_es_mapping.json` 文件中的内容，通过调用 Elasticsearch 的接口或者 Kibana Dev Tools 来创建索引（相当于数据库建表）
+2）复制 `sql/question_es_mapping.json` 文件中的内容，通过调用 Elasticsearch 的接口或者 Kibana Dev Tools 来创建索引（相当于数据库建表）
 
 ```
-PUT post_v1
+PUT question_v1
 {
- 参数见 sql/post_es_mapping.json 文件
+ 参数见 sql/question_es_mapping.json 文件
 }
 ```
 
