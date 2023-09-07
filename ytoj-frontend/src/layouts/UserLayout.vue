@@ -29,8 +29,4 @@ header.arco-layout-header.header {
   height: 68px;
 }
 </style>
-<script setup lang="ts">
-import { IconGithub } from "@arco-design/web-vue/es/icon";
-import GlobalHeader from "@/components/GlobalHeader.vue";
-import LoginHeader from "@/components/LoginHeader.vue";
-</script>
+<script setup lang="ts"></script>

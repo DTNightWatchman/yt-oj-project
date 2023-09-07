@@ -83,6 +83,10 @@ const visibleRoutes = computed(() => {
   });
 });
 
+onMounted(() => {
+  selectKey.value = [route.path];
+});
+
 // 路由跳转后，更新选中的菜单项
 router.afterEach((to, from, failure) => {
   selectKey.value = [to.path];
