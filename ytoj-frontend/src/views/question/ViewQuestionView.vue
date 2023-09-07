@@ -83,7 +83,6 @@
 <script setup lang="ts">
 import { defineProps, onMounted, ref, withDefaults } from "vue";
 import {
-  BaseResponse_long_,
   QuestionControllerService,
   QuestionSubmitAddRequest,
   QuestionSubmitControllerService,

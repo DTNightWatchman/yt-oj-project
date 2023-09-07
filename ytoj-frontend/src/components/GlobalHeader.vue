@@ -64,8 +64,6 @@ const router = useRouter();
 const route = useRoute();
 const selectKey = ref(["/"]);
 
-const loginUser = ref(store.state.user.loginUser);
-
 // 展示在菜单的路由
 const visibleRoutes = computed(() => {
   const loginUser = store.state.user.loginUser;
@@ -99,32 +97,6 @@ const doMenuClick = (key: string) => {
 };
 
 console.log(store.state);
-
-// onMounted(async () => {
-//   try {
-//     const res: BaseResponse_LoginUserVO_ =
-//       await UserControllerService.getLoginUserUsingGet();
-//     if (res.code === 0) {
-//       await store.dispatch("user/getLoginUser", {
-//         userName: res.data?.userName,
-//         userRole: res.data?.userRole,
-//       });
-//       await router.push("/");
-//     } else {
-//       message.error("登录失败:" + res.message);
-//     }
-//   } catch (e) {
-//     message.error("登录服务异常");
-//   }
-// });
-// setTimeout(() => {
-//   console.log(visibleRoutes.value);
-//   store.dispatch("user/getLoginUser", {
-//     userName: "摆渡人",
-//     userRole: ACCESS_ENUM.ADMIN,
-//   });
-//   console.log(store.state.user.loginUser);
-// }, 3000);
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

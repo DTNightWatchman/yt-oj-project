@@ -18,6 +18,13 @@
           <a-button status="danger" @click="doDelete(record)">删除</a-button>
         </a-space>
       </template>
+      <template #tags="{ record }">
+        <a-space wrap>
+          <a-tag v-for="(tag, index) of record.tags" :key="index" color="green">
+            {{ tag }}
+          </a-tag>
+        </a-space>
+      </template>
     </a-table>
   </div>
 </template>
@@ -86,7 +93,7 @@ const columns = [
   },
   {
     title: "标签",
-    dataIndex: "tags",
+    slotName: "tags",
   },
   {
     title: "提交数",
