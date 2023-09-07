@@ -16,10 +16,10 @@ public class JudgeConfig {
     /**
      * 内存限制（KB）
      */
-    private Long memory;
+    private Long memoryLimit;
 
     /**
      * 堆栈限制（KB）
      */
-    private Long memoryLimit;
+    private Long stackLimit;
 }

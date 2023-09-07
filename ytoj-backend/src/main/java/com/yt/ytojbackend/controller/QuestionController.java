@@ -13,6 +13,7 @@ import com.yt.ytojbackend.exception.ThrowUtils;
 import com.yt.ytojbackend.model.dto.question.*;
 import com.yt.ytojbackend.model.entity.Question;
 import com.yt.ytojbackend.model.entity.User;
+import com.yt.ytojbackend.model.vo.QuestionInfoVO;
 import com.yt.ytojbackend.model.vo.QuestionVO;
 import com.yt.ytojbackend.service.QuestionService;
 import com.yt.ytojbackend.service.UserService;
@@ -64,7 +65,7 @@ public class QuestionController {
             question.setTags(GSON.toJson(tags));
         }
         List<JudgeCase> judgeCase = questionAddRequest.getJudgeCase();
-        List<JudgeConfig> judgeConfig = questionAddRequest.getJudgeConfig();
+        JudgeConfig judgeConfig = questionAddRequest.getJudgeConfig();
         if (judgeCase != null) {
             question.setJudgeCase(GSON.toJson(judgeCase));
         }
@@ -127,7 +128,7 @@ public class QuestionController {
             question.setTags(GSON.toJson(tags));
         }
         List<JudgeCase> judgeCase = questionUpdateRequest.getJudgeCase();
-        List<JudgeConfig> judgeConfig = questionUpdateRequest.getJudgeConfig();
+        JudgeConfig judgeConfig = questionUpdateRequest.getJudgeConfig();
         if (judgeCase != null) {
             question.setJudgeCase(GSON.toJson(judgeCase));
         }
@@ -144,8 +145,28 @@ public class QuestionController {
         return ResultUtils.success(result);
     }
 
+
     /**
-     * 根据 id 获取
+     * 根据 id 获取自己的题目信息
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("/get")
+    public BaseResponse<QuestionInfoVO> getQuestionById(long id, HttpServletRequest request) {
+        if (id <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Question question = questionService.getById(id);
+        User loginUser = userService.getLoginUser(request);
+        if (!question.getUserId().equals(loginUser.getId()) && !userService.isAdmin(loginUser)) {
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+        }
+        return ResultUtils.success(QuestionInfoVO.objToVo(question));
+    }
+
+    /**
+     * 根据 id 获取(脱敏后的数据)
      *
      * @param id
      * @return

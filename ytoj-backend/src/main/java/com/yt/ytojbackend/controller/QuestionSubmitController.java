@@ -61,7 +61,6 @@ public class QuestionSubmitController {
         long result = questionSubmitService.doQuestionSubmit(questionSubmitAddRequest, loginUser);
         return ResultUtils.success(result);
     }
-
     /**
      * 分页获取题目提交列表（除了管理员外，普通用户）
      * @return

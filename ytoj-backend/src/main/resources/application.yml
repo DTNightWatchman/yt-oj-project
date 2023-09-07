@@ -1,4 +1,9 @@
 spring:
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
   application:
     name: ytoj-backend
   # 默认 dev 环境
