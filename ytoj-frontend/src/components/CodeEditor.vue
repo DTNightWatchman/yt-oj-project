@@ -1,19 +1,26 @@
 <template>
-  <div id="code-editor" ref="codeEditorRef" style="min-height: 400px"></div>
+  <div
+    id="code-editor"
+    ref="codeEditorRef"
+    style="min-height: 523px; height: 59vh"
+  ></div>
 </template>
 
 <script setup lang="ts">
 import * as monaco from "monaco-editor";
-import { onMounted, ref, toRaw } from "vue";
+import { onMounted, ref, toRaw, watch } from "vue";
 import { defineProps, withDefaults } from "vue/dist/vue";
+import { languages } from "monaco-editor";
 
 interface Props {
   value: string;
+  language: string;
   handleChange: (v: string) => void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   value: () => "",
+  language: () => "java",
   handleChange: (v: string) => {
     console.log(v);
   },
@@ -22,6 +29,25 @@ const props = withDefaults(defineProps<Props>(), {
 const codeEditorRef = ref();
 const codeEditor = ref();
 
+watch(
+  () => props.language,
+  () => {
+    codeEditor.value = monaco.editor.create(codeEditorRef.value, {
+      value: props.value,
+      language: props.language,
+      automaticLayout: true,
+      minimap: {
+        enabled: true,
+      },
+      // lineNumbers: "off",
+      // roundedSelection: false,
+      // scrollBeyondLastLine: false,
+      readOnly: false,
+      theme: "vs-dark",
+    });
+  }
+);
+
 onMounted(() => {
   if (!codeEditorRef.value) {
     return;
@@ -29,7 +55,7 @@ onMounted(() => {
   // Hover on each property to see its docs!
   codeEditor.value = monaco.editor.create(codeEditorRef.value, {
     value: props.value,
-    language: "java",
+    language: props.language,
     automaticLayout: true,
     minimap: {
       enabled: true,

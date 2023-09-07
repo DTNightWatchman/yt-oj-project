@@ -48,14 +48,14 @@
   </div>
 </template>
 <script setup lang="ts">
-import { reactive } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import {
   BaseResponse_LoginUserVO_,
   UserControllerService,
   UserLoginRequest,
 } from "../../../generated";
 import message from "@arco-design/web-vue/es/message";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import store from "@/store";
 
 const form = reactive({
@@ -65,6 +65,21 @@ const form = reactive({
 
 const router = useRouter();
 
+const redirect = ref("");
+
+onMounted(() => {
+  const queryString = window.location.search;
+
+  // 解析查询字符串为对象
+  const urlParams = new URLSearchParams(queryString);
+
+  // 遍历查询字符串中的参数并添加到params对象中
+  for (const [key, value] of urlParams) {
+    if (key === "redirect") {
+      redirect.value = value;
+    }
+  }
+});
 /**
  * 提交表单
  * @param data
@@ -74,12 +89,9 @@ const handleSubmit = async () => {
     const res: BaseResponse_LoginUserVO_ =
       await UserControllerService.userLoginUsingPost(form);
     if (res.code === 0) {
-      message.success("登录成功:" + res.data);
-      await store.dispatch("user/getLoginUser", {
-        userName: res.data?.userName,
-        userRole: res.data?.userRole,
-      });
-      await router.push("/");
+      message.success("登录成功");
+      await store.dispatch("user/getLoginUser");
+      router.push(redirect.value ? redirect.value : "/");
     } else {
       message.error("登录失败:" + res.message);
     }

@@ -1,6 +1,7 @@
 // initial state
 import { StoreOptions } from "vuex";
 import ACCESS_ENUM from "@/access/accessEnum";
+import { UserControllerService } from "../../generated";
 
 // getters
 const getters = {};
@@ -15,11 +16,19 @@ export default {
   }),
   getters,
   actions: {
-    getLoginUser({ commit, state }, payload) {
-      // todo 缓存请求服务端获取用户信息
-      //alert(JSON.stringify(state.loginUser));
-      //alert(JSON.stringify(payload));
-      commit("updateUser", payload);
+    async getLoginUser({ commit, state }, payload) {
+      // 缓存请求服务端获取用户信息
+      const res = await UserControllerService.getLoginUserUsingGet();
+      //alert("??");
+      if (res.code === 0) {
+        commit("updateUser", res.data);
+      } else {
+        commit("updateUser", {
+          ...state.loginUser,
+          userRole: ACCESS_ENUM.NOT_LOGIN,
+        });
+      }
+
       //alert(JSON.stringify(state.loginUser));
     },
   },

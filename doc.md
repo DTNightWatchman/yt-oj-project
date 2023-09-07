@@ -132,3 +132,38 @@ judgeInfo
 ## 2023-8-8
 
 编写独立的实体类entity，DTO，VO等
+
+## 2023-8-14
+
+使用md编辑器：
+
+> [bytedance/bytemd: Hackable Markdown Editor and Viewer (github.com)](https://github.com/bytedance/bytemd)
+
+引入代码编辑器： monaco-editor
+
+> [microsoft/monaco-editor: A browser based code editor (github.com)](https://github.com/microsoft/monaco-editor)
+>
+> npm install monaco-editor
+
+> 安装：使得代码编辑器和webpack整合
+>
+> npm install monaco-editor-webpack-plugin
+
+vue-cli项目/ webpack项目整合 Webpack项目
+
+```js
+const { defineConfig } = require("@vue/cli-service");
+const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
+module.exports = defineConfig({
+  transpileDependencies: true,
+  chainWebpack(config) {
+    config.plugin(new MonacoWebpackPlugin({}));
+  },
+});
+```
+
+![image-20230815231947462](doc/image-20230815231947462.png)
+
+## 2023-8-27
+
+使用

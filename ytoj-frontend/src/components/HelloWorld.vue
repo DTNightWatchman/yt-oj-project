@@ -1,11 +1,12 @@
 <template>
-  <MdEditor :value="value" :handle-change="handleChange" />
-  <div>hello</div>
+  <!--  <MdEditor :value="value" :handle-change="handleChange" />-->
+  <CodeEditor :value="value" :handle-change="handleChange" />
+  {{ value }}
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
-import MdEditor from "@/components/MdEditor.vue";
+import CodeEditor from "@/components/CodeEditor.vue";
 
 const value = ref("");
 

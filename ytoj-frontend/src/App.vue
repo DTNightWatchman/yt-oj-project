@@ -9,7 +9,11 @@
   </div>
 </template>
 
-<style></style>
+<style>
+.arco-form-item-content .arco-form-item-content-flex {
+  align-items: baseline;
+}
+</style>
 <script setup lang="ts">
 import BasicLayout from "@/layouts/BasicLayout.vue";
 import { onMounted } from "vue";

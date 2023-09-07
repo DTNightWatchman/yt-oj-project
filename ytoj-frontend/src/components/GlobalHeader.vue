@@ -96,23 +96,23 @@ const doMenuClick = (key: string) => {
 
 console.log(store.state);
 
-onMounted(async () => {
-  try {
-    const res: BaseResponse_LoginUserVO_ =
-      await UserControllerService.getLoginUserUsingGet();
-    if (res.code === 0) {
-      await store.dispatch("user/getLoginUser", {
-        userName: res.data?.userName,
-        userRole: res.data?.userRole,
-      });
-      await router.push("/");
-    } else {
-      message.error("登录失败:" + res.message);
-    }
-  } catch (e) {
-    message.error("登录服务异常");
-  }
-});
+// onMounted(async () => {
+//   try {
+//     const res: BaseResponse_LoginUserVO_ =
+//       await UserControllerService.getLoginUserUsingGet();
+//     if (res.code === 0) {
+//       await store.dispatch("user/getLoginUser", {
+//         userName: res.data?.userName,
+//         userRole: res.data?.userRole,
+//       });
+//       await router.push("/");
+//     } else {
+//       message.error("登录失败:" + res.message);
+//     }
+//   } catch (e) {
+//     message.error("登录服务异常");
+//   }
+// });
 // setTimeout(() => {
 //   console.log(visibleRoutes.value);
 //   store.dispatch("user/getLoginUser", {
