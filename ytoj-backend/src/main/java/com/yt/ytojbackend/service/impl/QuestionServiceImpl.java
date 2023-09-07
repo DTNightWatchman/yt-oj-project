@@ -112,7 +112,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question>
         queryWrapper.eq("isDelete", false);
         queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
                 sortField);
-        queryWrapper.lambda().select(Question::getId, Question::getTitle, Question::getTags, Question::getSubmitNum, Question::getAcceptedNum, Question::getUserId);
+        queryWrapper.lambda().select(Question::getId, Question::getTitle, Question::getTags, Question::getSubmitNum, Question::getAcceptedNum, Question::getUserId, Question::getCreateTime);
         return queryWrapper;
     }
 
