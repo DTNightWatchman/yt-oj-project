@@ -10,14 +10,14 @@
       </a-form-item>
       <a-form-item field="content" label="题目内容">
         <MdEditor
-          :value="form.answer as string"
-          :handle-change="onAnswerChange"
+          :value="form.content as string"
+          :handle-change="onContentChange"
         />
       </a-form-item>
       <a-form-item field="answer" label="答案">
         <MdEditor
-          :value="form.content as string"
-          :handle-change="onContentChange"
+          :value="form.answer as string"
+          :handle-change="onAnswerChange"
         />
       </a-form-item>
 

@@ -10,7 +10,6 @@
 import * as monaco from "monaco-editor";
 import { onMounted, ref, toRaw, watch } from "vue";
 import { defineProps, withDefaults } from "vue/dist/vue";
-import { languages } from "monaco-editor";
 
 interface Props {
   value: string;
