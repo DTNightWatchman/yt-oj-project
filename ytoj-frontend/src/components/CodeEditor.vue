@@ -31,19 +31,12 @@ const codeEditor = ref();
 watch(
   () => props.language,
   () => {
-    codeEditor.value = monaco.editor.create(codeEditorRef.value, {
-      value: props.value,
-      language: props.language,
-      automaticLayout: true,
-      minimap: {
-        enabled: true,
-      },
-      // lineNumbers: "off",
-      // roundedSelection: false,
-      // scrollBeyondLastLine: false,
-      readOnly: false,
-      theme: "vs-dark",
-    });
+    if (codeEditor.value) {
+      monaco.editor.setModelLanguage(
+        toRaw(codeEditor.value).getModel(),
+        props.language
+      );
+    }
   }
 );
 
