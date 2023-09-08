@@ -19,7 +19,7 @@ public class JudgeInfo {
     private Long memory;
 
     /**
-     * 堆栈限制（KB）
+     * 消耗时间（KB）
      */
-    private Long memoryLimit;
+    private Long time;
 }
