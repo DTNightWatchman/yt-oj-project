@@ -1,11 +1,8 @@
 package com.yt.ytojbackend.model.vo;
 
 import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.yt.ytojbackend.model.dto.questionsubmit.JudgeInfo;
+import com.yt.ytojbackend.judge.codesandbox.model.JudgeInfo;
 import com.yt.ytojbackend.model.entity.QuestionSubmit;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
