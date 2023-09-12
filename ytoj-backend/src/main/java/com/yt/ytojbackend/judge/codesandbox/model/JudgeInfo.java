@@ -1,4 +1,4 @@
-package com.yt.ytojbackend.model.dto.questionsubmit;
+package com.yt.ytojbackend.judge.codesandbox.model;
 
 import lombok.Data;
 
