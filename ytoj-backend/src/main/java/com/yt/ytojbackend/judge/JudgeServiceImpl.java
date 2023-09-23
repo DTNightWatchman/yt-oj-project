@@ -37,7 +37,7 @@ public class JudgeServiceImpl implements JudgeService {
     @Resource
     private JudgeManage judgeManage;
 
-    @Value("codesandbox.type")
+    @Value("${codesandbox.type}")
     private String codeSandBoxType;
 
     private Gson gson = new Gson();
@@ -83,11 +83,11 @@ public class JudgeServiceImpl implements JudgeService {
         List<String> outputList = executeCodeResponse.getOutputList();
         // 根据沙箱的执行结果，设置题目的判题状态和信息
         JudgeContext judgeContext = new JudgeContext();
-        judgeContext.setJudgeInfo(executeCodeResponse.getJudgeInfo() );
+        judgeContext.setJudgeInfo(executeCodeResponse.getJudgeInfo());
         judgeContext.setInputList(inputList);
         judgeContext.setOutputList(outputList);
         judgeContext.setJudgeCaseList(judgeCaseList);
-        judgeContext.setQuestion(question );
+        judgeContext.setQuestion(question);
         judgeContext.setQuestionSubmit(questionSubmit);
 
         JudgeInfo judgeInfo = judgeManage.doJudge(judgeContext);
