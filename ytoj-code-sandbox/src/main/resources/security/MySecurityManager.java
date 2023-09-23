@@ -15,10 +15,10 @@ public class MySecurityManager extends SecurityManager{
     }
 
     // 检测程序是否可以读文件
-    @Override
-    public void checkRead(String file) {
-        throw new SecurityException("checkRead 权限异常:" + file);
-    }
+//    @Override
+//    public void checkRead(String file) {
+//        throw new SecurityException("checkRead 权限异常:" + file);
+//    }
 
     // 检测程序是否允许写文件
     @Override

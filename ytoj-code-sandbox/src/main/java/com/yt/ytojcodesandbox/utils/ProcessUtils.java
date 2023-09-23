@@ -1,11 +1,15 @@
 package com.yt.ytojcodesandbox.utils;
 
 import com.yt.ytojcodesandbox.model.ExecuteMessage;
+import org.apache.catalina.LifecycleState;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.StopWatch;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProcessUtils {
 
@@ -23,30 +27,34 @@ public class ProcessUtils {
             System.out.println(opName + "成功");
 
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            StringBuilder compileOutputStringBuilder = new StringBuilder();
+
+            List<String> outputStrList = new ArrayList<>();
             String compileOutputLine = null;
             while ((compileOutputLine = bufferedReader.readLine()) != null) {
-                compileOutputStringBuilder.append(compileOutputLine);
+                outputStrList.add(compileOutputLine);
             }
-            executeMessage.setMessage(compileOutputStringBuilder.toString());
+            executeMessage.setMessage(StringUtils.join(outputStrList, "\n"));
         } else {
             System.out.println(opName + "失败,错误码:" + exitValue);
 
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            StringBuilder compileOutputStringBuilder = new StringBuilder();
+            List<String> compileOutputStrList = new ArrayList<>();
+
             String compileOutputLine = null;
             while ((compileOutputLine = bufferedReader.readLine()) != null) {
-                compileOutputStringBuilder.append(compileOutputLine);
+                compileOutputStrList.add(compileOutputLine);
             }
-            executeMessage.setMessage(compileOutputStringBuilder.toString());
+            executeMessage.setMessage(StringUtils.join(compileOutputStrList, "\n"));
 
+            // 异常结果
             BufferedReader errorBufferedReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-            StringBuilder errorCompileOutputStringBuilder = new StringBuilder();
             String errorCompileOutputLine = null;
+            List<String> errorOutputStrList = new ArrayList<>();
+
             while ((errorCompileOutputLine = errorBufferedReader.readLine()) != null) {
-                errorCompileOutputStringBuilder.append(errorCompileOutputLine);
+                errorOutputStrList.add(errorCompileOutputLine);
             }
-            executeMessage.setErrorMessage(errorCompileOutputStringBuilder.toString());
+            executeMessage.setErrorMessage(StringUtils.join(errorOutputStrList, "\n"));
         }
         stopWatch.stop();
         executeMessage.setTime(stopWatch.getLastTaskTimeMillis());

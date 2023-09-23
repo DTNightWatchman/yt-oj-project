@@ -9,9 +9,7 @@ import com.yt.ytojcodesandbox.model.ExecuteCodeRequest;
 import com.yt.ytojcodesandbox.model.ExecuteCodeResponse;
 import com.yt.ytojcodesandbox.model.ExecuteMessage;
 import com.yt.ytojcodesandbox.model.JudgeInfo;
-import com.yt.ytojcodesandbox.security.DefaultSecurityManage;
 import com.yt.ytojcodesandbox.utils.ProcessUtils;
-import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,8 +20,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.*;
 
-@Component
-public class JavaNativeCodeSandbox implements CodeSandbox{
+public class JavaNativeCodeSandboxOld implements CodeSandbox{
 
     private static final String GLOBAL_CODE_DIR_NAME = "tmpcode";
 
@@ -45,7 +42,7 @@ public class JavaNativeCodeSandbox implements CodeSandbox{
     }
 
     public static void main(String[] args) {
-        JavaNativeCodeSandbox javaNativeCodeSandbox = new JavaNativeCodeSandbox();
+        JavaNativeCodeSandboxOld javaNativeCodeSandbox = new JavaNativeCodeSandboxOld();
         ExecuteCodeRequest executeCodeRequest = new ExecuteCodeRequest();
         executeCodeRequest.setInputList(Arrays.asList("1 2", "2 3"));
         String code = ResourceUtil.readStr("testcode/unsafecode/Main.java", StandardCharsets.UTF_8);
@@ -162,9 +159,8 @@ public class JavaNativeCodeSandbox implements CodeSandbox{
         JudgeInfo judgeInfo = new JudgeInfo();
         judgeInfo.setTime(maxTime);
         // todo 从process中拿到运行内存比较复杂
-        judgeInfo.setMemory(0L);
+        // judgeInfo.setMemory();
         executeCodeResponse.setJudgeInfo(judgeInfo);
-        executeCodeResponse.setOutputList(outputList);
         // 进行文件清理
         if (userCodeFile.getParentFile() != null) {
             boolean del = FileUtil.del(userCodeParentPath);

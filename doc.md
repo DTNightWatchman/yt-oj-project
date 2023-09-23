@@ -457,3 +457,319 @@ DockerClientConfig：用于定义初始化DockerClient 的配置（类比MySQL�
 DockerHttpClient：用于向Docker守护进程（操作Docker的接口）发送请求的的客户端，低层封装，不推荐使用，要自己构建请求参数
 
 DockerClient：才是真正和Docker守护进程交互的、最方便的SDK，高层封装，对DockerHttpClient再进行了一层封装
+
+
+
+#### 远程连接开发
+
+如果不能正常启动：
+
+![image-20230912221423506](doc/image-20230912221423506.png)
+
+输入配置：
+
+```
+-Djdk.lang.Process.launchMechanism=vfork
+```
+
+##### 通过代码拉取镜像
+
+```java
+package com.yt.ytojcodesandbox.docker;
+
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.PingCmd;
+import com.github.dockerjava.api.command.PullImageCmd;
+import com.github.dockerjava.api.command.PullImageResultCallback;
+import com.github.dockerjava.api.model.PullResponseItem;
+import com.github.dockerjava.core.DockerClientBuilder;
+
+public class DockerDemo {
+
+    public static void main(String[] args) {
+        // 获取默认的 Docker Client
+
+        DockerClient dockerClient = DockerClientBuilder.getInstance().build();
+        String image = "nginx:latest";
+        PullImageCmd pullImageCmd = dockerClient.pullImageCmd(image);
+        PullImageResultCallback pullImageResultCallback = new PullImageResultCallback(){
+
+            @Override
+            public void onNext(PullResponseItem item) {
+                System.out.println("下载镜像");
+                super.onNext(item);
+            }
+        };
+        try {
+            pullImageCmd.exec(pullImageResultCallback).awaitCompletion();
+            System.out.printf("下载完成");
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+```
+
+## 2023-9-17
+
+docker 的一些操作
+
+```java
+package com.yt.ytojcodesandbox.docker;
+
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.*;
+import com.github.dockerjava.api.model.Container;
+import com.github.dockerjava.api.model.Frame;
+import com.github.dockerjava.api.model.PullResponseItem;
+import com.github.dockerjava.core.DockerClientBuilder;
+import com.github.dockerjava.core.command.LogContainerResultCallback;
+
+import java.util.List;
+
+public class DockerDemo {
+
+    public static void main(String[] args) throws InterruptedException {
+        // 获取默认的 Docker Client
+//        DockerClient dockerClient = DockerClientBuilder.getInstance().build();
+//        PingCmd pingCmd = dockerClient.pingCmd();
+//        pingCmd.exec();
+        DockerClient dockerClient = DockerClientBuilder.getInstance().build();
+        String image = "nginx:latest";
+//        PullImageCmd pullImageCmd = dockerClient.pullImageCmd(image);
+//        PullImageResultCallback pullImageResultCallback = new PullImageResultCallback(){
+//
+//            @Override
+//            public void onNext(PullResponseItem item) {
+//                System.out.println("下载镜像");
+//                super.onNext(item);
+//            }
+//        };
+//        try {
+//            pullImageCmd.exec(pullImageResultCallback).awaitCompletion();
+//            System.out.printf("下载完成");
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+        CreateContainerCmd containerCmd = dockerClient.createContainerCmd(image);
+        CreateContainerResponse createContainerResponse = containerCmd
+                .withCmd("echo", "hello docker")
+                .exec();
+        System.out.println(createContainerResponse);
+        String containerId = createContainerResponse.getId();
+
+        // 查看容器状态
+        ListContainersCmd listContainersCmd = dockerClient.listContainersCmd();
+        List<Container> containerList = listContainersCmd.withShowAll(true).exec();
+        for (Container container : containerList) {
+            System.out.println(container);
+        }
+
+        // docker 启动容器 75e1e07f6ad393d141c2f767a328109dda8c07f98f3b244ea3502e853f73ab0c
+        dockerClient.startContainerCmd(containerId).exec();
+
+
+        // 查看日志
+        LogContainerResultCallback logContainerResultCallback = new LogContainerResultCallback() {
+            @Override
+            public void onNext(Frame item) {
+                System.out.println("日志:" + new String(item.getPayload()));
+                super.onNext(item);
+            }
+        };
+        dockerClient.logContainerCmd(containerId)
+                .withStdOut(true)
+                .withStdErr(true)
+                .exec(logContainerResultCallback)
+                .awaitCompletion();
+
+        // 删除容器
+        dockerClient.removeContainerCmd(containerId).withForce(true).exec();
+
+        // 删除镜像
+        dockerClient.removeImageCmd(image).withForce(true).exec();
+    }
+}
+```
+
+### 使用Docker实现代码沙箱
+
+docker 负责运行Java程序，并且得到结果
+
+1. 把用户的代码保存成文件
+2. 编译代码，得到文件
+3. 把编译好的文件上传到容器环境内
+4. 在容器中执行代码，得到输出结果
+5. 收集整理输出结果
+6. 文件清理，释放空间
+7. 错误处理，提升程序健壮性
+
+> todo 模板方法设计模式
+>
+> 定义同一套实现流程，让不同的子类去负责不同流程中的具体实现。执行步骤一样，每个步骤的实现方式不一样
+
+### 创建容器，上传编译文件
+
+自定义容器的两种方式：
+
+1）在已有镜像的基础上再补充：比如拉取线程的Java环境，再把编译后的文件复制到容器里
+
+2）自定义容器（比较成熟的项目）
+
+创建一个可交互的容器，能接受多次输入和获取输出
+
+```java
+HostConfig hostConfig = new HostConfig();
+hostConfig.setBinds(new Bind(userCodeParentPath, new Volume("/root/app")));
+```
+
+同步容器和本地路径
+
+
+
+## 2023-09-18
+
+使用容器获取执行时间：还是使用StopWatch获取执行时间
+
+### 使用容器获取占用内存：
+
+程序占用的内存：
+
+程序占用的内存每个时刻都在变化，所以你不可能获取到所有时间点的内存
+
+所以要做的，是定义一个周期，定期地获取程序的内存
+
+
+
+## 2023-09-19
+
+使用dockerClient来进行内存的获取
+
+```java
+final long[] maxMemory = {0L};
+dockerClient.statsCmd(containerId).exec(new ResultCallback<Statistics>() {
+    @Override
+    public void onNext(Statistics statistics) {
+        System.out.println("内存占用:" + statistics.getMemoryStats().getUsage());
+        maxMemory[0] = Math.max(statistics.getMemoryStats().getUsage(), maxMemory[0]);
+    }
+
+    @Override
+    public void onStart(Closeable closeable) {
+    }
+
+    @Override
+    public void onError(Throwable throwable) {
+    }
+
+    @Override
+    public void onComplete() {
+    }
+
+    @Override
+    public void close() throws IOException {
+    }
+});
+```
+
+通过这种方式能够实时获取到内存
+
+所以这里的onNext就是一个回调函数，函数内部的目的是使得maxMemory是最大值
+
+注意：
+
+需要在每个循环结束的时候将maxMemory清零，然后通过加锁和释放锁的方式将线程进行阻塞
+
+```java
+try {
+    System.out.println("阻塞");
+    System.out.println("memory:" + maxMemory[0]);
+    synchronized (lock) {
+        lock.wait();
+    }
+    //Thread.sleep(1000);
+    System.out.println("memory2:" + maxMemory[0]);
+} catch (InterruptedException e) {
+    e.printStackTrace();
+    throw new RuntimeException(e);
+}
+```
+
+```java
+@Override
+public void onNext(Statistics statistics) {
+    System.out.println("内存占用:" + statistics.getMemoryStats().getUsage());
+    maxMemory[0] = Math.max(statistics.getMemoryStats().getUsage(), maxMemory[0]);
+    synchronized (lock) {
+        lock.notify();
+    }
+}
+```
+
+通过这种方式保证每次循环获取到的都是本次测试用例的内存占用最大值，而不是所有测试用例中内存的最大占用值
+
+## 2023-9-21
+
+### docker安全后续优化
+
+#### 设置超时时间
+
+```java
+dockerClient.execStartCmd(execId).exec(new ExecStartResultCallback() {
+    @Override
+    public void onNext(Frame frame) {
+        StreamType streamType = frame.getStreamType();
+        if (StreamType.STDERR.equals(streamType)) {
+            errorMessage[0] = new String(frame.getPayload());
+            System.out.println("输出错误结果:" + errorMessage[0]);
+        } else {
+            message[0] = new String(frame.getPayload());
+            System.out.println("输出结果:" + message[0]);
+        }
+        super. onNext(frame);
+    }
+
+    @Override
+    public void onComplete() {
+        timeout[0] = false;
+        super.onComplete();
+    }
+}).awaitCompletion(TIME_OUT, TimeUnit.MICROSECONDS);
+```
+
+#### 设置内存
+
+```
+hostConfig.withMemory(100 * 1000 * 1000L);
+```
+
+#### 设置禁止网络
+
+```java
+CreateContainerResponse createContainerResponse = containerCmd
+        .withHostConfig(hostConfig)
+        .withNetworkDisabled(true) // 设置禁止网络
+        .withAttachStdin(true)
+        .withAttachStderr(true)
+        .withAttachStdout(true)
+        .withTty(true)
+        .exec();
+```
+
+#### 权限配置
+
+ 限制Java安全管理器
+
+限制用户不能向根目录写文件
+
+linux的安全配置管理
+
+![image-20230921210117532](doc/image-20230921210117532.png)
+
+
+
+
+
+### 使用模板方法优化代码结构
+
+![image-20230923125835044](doc/image-20230923125835044.png)
