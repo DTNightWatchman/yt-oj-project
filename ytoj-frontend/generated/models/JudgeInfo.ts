@@ -5,6 +5,6 @@
 
 export type JudgeInfo = {
     memory?: number;
-    memoryLimit?: number;
     message?: string;
+    time?: number;
 };

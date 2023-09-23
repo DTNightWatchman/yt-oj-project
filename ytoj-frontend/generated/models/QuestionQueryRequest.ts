@@ -4,7 +4,6 @@
 /* eslint-disable */
 
 export type QuestionQueryRequest = {
-    answer?: string;
     content?: string;
     current?: number;
     id?: number;
