@@ -4,7 +4,13 @@
       <a-col :md="12" :xs="24">
         <a-card>
           <a-tabs default-active-key="question">
-            <a-tab-pane v-if="question" key="question" title="题目">
+            <a-tab-pane
+              v-if="question"
+              key="question"
+              title="题目"
+              style="overflow: auto"
+              id="scrollbar1"
+            >
               <a-row class="grid-demo" justify="space-between" align="center">
                 <a-col :span="16">
                   <div>
@@ -38,20 +44,35 @@
                   {{ question.judgeConfig.stackLimit ?? 0 }}
                 </a-descriptions-item>
               </a-descriptions>
-
-              <MdReader :value="question.content || ''" />
+              <MdReader :value="question.content || ''" style="height: 308px" />
             </a-tab-pane>
             <a-tab-pane key="comment" title="评论"> 评论区</a-tab-pane>
-            <a-tab-pane key="answer" title="答案"> 答案</a-tab-pane>
+            <a-tab-pane key="answer" title="答案">
+              <div v-if="answer === ''">
+                <a-button type="primary" long @click="getAnswer"
+                  >花费金币获取答案
+                </a-button>
+              </div>
+              <div v-else>
+                <MdReader :value="answer" />
+              </div>
+            </a-tab-pane>
+            <a-tab-pane key="submit" title="提交记录">
+              <QuestionsSubmitView />
+            </a-tab-pane>
           </a-tabs>
         </a-card>
       </a-col>
       <a-col :md="12">
-        <a-form :model="form" layout="inline">
+        <a-form
+          :model="form"
+          layout="inline"
+          style="display: flex; justify-content: space-between"
+        >
           <a-form-item
             field="language"
             label="编程语言"
-            style="min-width: 240px"
+            style="min-width: 150px"
           >
             <a-select
               v-model="form.language"
@@ -64,17 +85,16 @@
               <a-option>html</a-option>
             </a-select>
           </a-form-item>
+          <a-button type="primary" style="min-width: 200px" @click="doSubmit">
+            提交代码
+          </a-button>
         </a-form>
-
+        <div style="height: 8px" />
         <CodeEditor
           :value="form.code as string"
           :language="form.language as string"
           :handle-change="changeCode"
         />
-        <a-divider size="0" />
-        <a-button type="primary" style="min-width: 200px" @click="doSubmit">
-          提交代码
-        </a-button>
       </a-col>
     </a-row>
   </div>
@@ -90,6 +110,7 @@ import {
 import message from "@arco-design/web-vue/es/message";
 import CodeEditor from "@/components/CodeEditor.vue";
 import MdReader from "@/components/MdReader.vue";
+import QuestionsSubmitView from "@/components/QuestionSubmitList.vue";
 
 const question = ref<QuestionVO>();
 
@@ -111,6 +132,8 @@ const loadData = async () => {
   }
 };
 
+const answer = ref("");
+
 const form = ref<QuestionSubmitAddRequest>({
   language: "java",
   code: "",
@@ -131,6 +154,14 @@ const doSubmit = async () => {
   }
 };
 
+const getAnswer = async () => {
+  const res = await QuestionControllerService.getQuestionAnswerUsingGet(
+    question.value?.id as any
+  );
+
+  answer.value = res.data as string;
+};
+
 const changeCode = (value: string) => {
   form.value.code = value;
 };
@@ -145,5 +176,24 @@ onMounted(() => {
 #viewQuestionsView {
   max-width: 1800px;
   margin: 0 auto;
+}
+
+.grid-demo {
+  overflow: auto;
+}
+
+#scrollbar1::-webkit-scrollbar {
+  width: 10px;
+  padding-right: 0.5px;
+}
+
+#scrollbar1::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background-color: rgb(139, 139, 139);
+}
+
+#scrollbar1::-webkit-scrollbar-track {
+  border-radius: 8px;
+  background-color: rgb(255, 255, 255);
 }
 </style>

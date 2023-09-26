@@ -42,6 +42,8 @@
   left: 0;
   right: 0;
   text-align: center;
+  line-height: 2px;
+  //height: 8px;
 }
 
 header.arco-layout-header.header {

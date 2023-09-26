@@ -8,6 +8,7 @@ import type { BaseResponse_Page_QuestionSubmitVO_ } from '../models/BaseResponse
 import type { BaseResponse_Page_QuestionVO_ } from '../models/BaseResponse_Page_QuestionVO_';
 import type { BaseResponse_QuestionInfoVO_ } from '../models/BaseResponse_QuestionInfoVO_';
 import type { BaseResponse_QuestionVO_ } from '../models/BaseResponse_QuestionVO_';
+import type { BaseResponse_string_ } from '../models/BaseResponse_string_';
 import type { DeleteRequest } from '../models/DeleteRequest';
 import type { QuestionAddRequest } from '../models/QuestionAddRequest';
 import type { QuestionEditRequest } from '../models/QuestionEditRequest';
@@ -36,6 +37,29 @@ questionAddRequest: QuestionAddRequest,
             method: 'POST',
             url: '/api/question/add',
             body: questionAddRequest,
+            errors: {
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+            },
+        });
+    }
+
+    /**
+     * getQuestionAnswer
+     * @param questionId questionId
+     * @returns BaseResponse_string_ OK
+     * @throws ApiError
+     */
+    public static getQuestionAnswerUsingGet(
+questionId?: string,
+): CancelablePromise<BaseResponse_string_> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/question/answer',
+            query: {
+                'questionId': questionId,
+            },
             errors: {
                 401: `Unauthorized`,
                 403: `Forbidden`,
@@ -192,6 +216,28 @@ questionSubmitAddRequest: QuestionSubmitAddRequest,
             method: 'POST',
             url: '/api/question/question_submit/do',
             body: questionSubmitAddRequest,
+            errors: {
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+            },
+        });
+    }
+
+    /**
+     * listMyQuestionSubmitByPage
+     * @param questionSubmitQueryRequest questionSubmitQueryRequest
+     * @returns BaseResponse_Page_QuestionSubmitVO_ OK
+     * @returns any Created
+     * @throws ApiError
+     */
+    public static listMyQuestionSubmitByPageUsingPost(
+questionSubmitQueryRequest: QuestionSubmitQueryRequest,
+): CancelablePromise<BaseResponse_Page_QuestionSubmitVO_ | any> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/question/question_submit/list/my/page',
+            body: questionSubmitQueryRequest,
             errors: {
                 401: `Unauthorized`,
                 403: `Forbidden`,

@@ -2,7 +2,7 @@
   <div
     id="code-editor"
     ref="codeEditorRef"
-    style="min-height: 523px; height: 59vh"
+    style="min-height: 500px; height: 60vh"
   ></div>
 </template>
 

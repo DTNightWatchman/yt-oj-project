@@ -38,9 +38,38 @@
     </a-col>
     <a-col flex="100px">
       <div>
-        <div style="color: white">
-          {{ store.state?.user?.loginUser.userName ?? "未登录账号" }}
-        </div>
+        <a-dropdown>
+          <div
+            v-if="
+              store.state?.user?.loginUser.userName &&
+              store.state?.user?.loginUser.userName !== '未登录'
+            "
+          >
+            <a-avatar id="avatar">
+              <img
+                alt="avatar"
+                :src="store.state?.user?.loginUser.userAvatar"
+              />
+            </a-avatar>
+          </div>
+
+          <a-button v-else style="margin-right: 10px">未登录账号</a-button>
+          <template #content>
+            <a-doption>Option 1</a-doption>
+            <a-doption>Option 2</a-doption>
+            <a-doption>Option 3</a-doption>
+            <a-dgroup>
+              <a-doption
+                v-if="
+                  store.state?.user?.loginUser.userName &&
+                  store.state?.user?.loginUser.userName !== '未登录'
+                "
+                >退出登录
+              </a-doption>
+              <a-doption v-else>现在登录</a-doption>
+            </a-dgroup>
+          </template>
+        </a-dropdown>
       </div>
     </a-col>
   </a-row>
@@ -49,15 +78,10 @@
 <script setup lang="ts">
 import { routes } from "@/router/routes";
 import { useRoute, useRouter } from "vue-router";
-import { computed, onMounted, ref, watch, watchEffect } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import checkAccess from "@/access/checkAccess";
-import ACCESS_ENUM from "@/access/accessEnum";
-import {
-  BaseResponse_LoginUserVO_,
-  UserControllerService,
-} from "../../generated";
-import message from "@arco-design/web-vue/es/message";
+import accessEnum from "@/access/accessEnum";
 
 const store = useStore();
 const router = useRouter();
@@ -119,5 +143,9 @@ img {
   font-size: larger;
   font-weight: lighter;
   margin-left: 10px;
+}
+
+avatar:hover {
+  cursor: pointer;
 }
 </style>

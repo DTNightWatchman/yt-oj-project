@@ -1,5 +1,6 @@
 package com.yt.ytojbackend.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import com.yt.ytojbackend.annotation.AuthCheck;
@@ -23,6 +24,7 @@ import com.yt.ytojbackend.service.QuestionService;
 import com.yt.ytojbackend.service.QuestionSubmitService;
 import com.yt.ytojbackend.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -197,7 +199,7 @@ public class QuestionController {
      */
     @PostMapping("/list/page/vo")
     public BaseResponse<Page<QuestionVO>> listQuestionVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest,
-            HttpServletRequest request) {
+                                                               HttpServletRequest request) {
         long current = questionQueryRequest.getCurrent();
         long size = questionQueryRequest.getPageSize();
         // 限制爬虫
@@ -216,7 +218,7 @@ public class QuestionController {
      */
     @PostMapping("/my/list/page/vo")
     public BaseResponse<Page<QuestionVO>> listMyQuestionVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest,
-            HttpServletRequest request) {
+                                                                 HttpServletRequest request) {
         if (questionQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -229,6 +231,22 @@ public class QuestionController {
         Page<Question> questionPage = questionService.page(new Page<>(current, size),
                 questionService.getQueryWrapper(questionQueryRequest));
         return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
+    }
+
+
+    @GetMapping("/answer")
+    public BaseResponse<String> getQuestionAnswer(String questionId, HttpServletRequest request) {
+        if (StringUtils.isBlank(questionId)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        // todo 不可获取多次，需要做一个限制
+        Question question = questionService.getOne(new LambdaQueryWrapper<Question>()
+                .select(Question::getAnswer)
+                .eq(Question::getId, questionId));
+        if (question == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        return ResultUtils.success(question.getAnswer());
     }
 
     /**
@@ -271,6 +289,7 @@ public class QuestionController {
         boolean result = questionService.updateById(question);
         return ResultUtils.success(result);
     }
+
     @Resource
     private QuestionSubmitService questionSubmitService;
 
@@ -290,14 +309,23 @@ public class QuestionController {
         }
         // 登录才能点赞
         final User loginUser = userService.getLoginUser(request);
-        //long questionId = questionSubmitAddRequest.getQuestionId();
         long result = questionSubmitService.doQuestionSubmit(questionSubmitAddRequest, loginUser);
         return ResultUtils.success(result);
     }
+
     /**
      * 分页获取题目提交列表（除了管理员外，普通用户）
+     *
      * @return
      */
+    @PostMapping("/question_submit/list/my/page")
+    public BaseResponse<Page<QuestionSubmitVO>> listMyQuestionSubmitByPage(@RequestBody QuestionSubmitQueryRequest questionSubmitQueryRequest,
+                                                                           HttpServletRequest request) {
+        Page<QuestionSubmitVO> questionSubmitPage = questionSubmitService.getMyQuestionSubmitByPage(questionSubmitQueryRequest, request);
+        return ResultUtils.success(questionSubmitPage);
+    }
+
+    @AuthCheck(mustRole = "admin")
     @PostMapping("/question_submit/list/page")
     public BaseResponse<Page<QuestionSubmitVO>> listQuestionSubmitByPage(@RequestBody QuestionSubmitQueryRequest questionSubmitQueryRequest,
                                                                          HttpServletRequest request) {

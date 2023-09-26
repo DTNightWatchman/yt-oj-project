@@ -122,9 +122,9 @@ const updatePage = route.path.includes("update");
 
 const form = ref({
   title: "",
-  tags: ["A", "B"],
-  answer: "暴力破解",
-  content: "题目内容",
+  tags: [],
+  answer: "",
+  content: "",
   judgeConfig: {
     memoryLimit: 1000,
     stackLimit: 1000,
@@ -132,12 +132,8 @@ const form = ref({
   },
   judgeCase: [
     {
-      input: "1 2",
-      output: "3 4",
-    },
-    {
-      input: "1 3",
-      output: "2 4",
+      input: "",
+      output: "",
     },
   ],
 });

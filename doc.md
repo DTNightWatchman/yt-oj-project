@@ -773,3 +773,216 @@ linux的安全配置管理
 ### 使用模板方法优化代码结构
 
 ![image-20230923125835044](doc/image-20230923125835044.png)
+
+## 2023-9-23
+
+调整接口
+
+todo 开发查看提交记录页面
+
+
+
+### Spring cloud
+
+> https://sca.aliyun.com/zh-cn/
+
+![image-20230923224756065](doc/image-20230923224756065.png)
+
+开启redis
+
+#### 功能划分
+
+1. 用户模块 /api/user和 /api/user/inner(内部调用)
+2. 题目模块（题目提交）/api/question和 /api/question/inner(内部调用)
+3. 判题模块（较重的操作）/api/judge和 /api/judge/inner(内部调用)
+4. 公共模块
+
+代码沙箱
+
+nacos
+
+gateway
+
+## 2023-9-25
+
+新建一个基于spring cloud 的基础项目
+
+例如：用户服务中，有些不利于远程参数调用，或者实现起来非常简单，没有必要远程调用的，就直接使用default来简单实现一下即可
+
+## 2023-9-26
+
+修改业务调用为feignClient
+
+划分为微服务之后，启动类上需要加上一个扫包注解 ```@ComponentScan``` 这个注解是指定一个扫包路径，因为，不在同一个项目下的时候，是不会自动扫到的，需要指定一下路径才能扫到
+
+![image-20230926112933055](doc/image-20230926112933055.png)
+
+使用 @EnableDiscoveryClient 注解开启服务注册与发现功能：
+
+![image-20230926113026923](doc/image-20230926113026923.png)
+
+使用```@EnableFeignClients```注解开启服务调用 开启服务调用
+
+```java
+@EnableDiscoveryClient
+@EnableFeignClients(basePackages = {"com.yt.ytojbackendserviceclient.service"})
+```
+
+还需要引入一个负载均衡器
+
+```xml
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-openfeign</artifactId>
+    <version>3.1.5</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-loadbalancer -->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+    <version>3.1.5</version>
+</dependency>
+
+```
+
+### 使用微服务网关聚合不同服务的调用
+
+#### 使用原因：
+
+- 所有的端口不同，会增加前端的调用成本
+- 所有的服务是分散的，需要集中管理（解决跨域，鉴权等问题）
+
+#### 接口路由
+
+```yaml
+spring:
+  application:
+    name: ytoj-backend-gateway
+  cloud:
+    nacos:
+      serverAddr: 127.0.0.1:8848
+    gateway:
+      routes:
+        - id: ytoj-backend-user-service  # 第一个路由的id
+          uri: lb://ytoj-backend-user-service
+          predicates: # 路由的匹配条件
+            - Path=/api/user/**
+        - id: ytoj-backend-question-service  # 第二个路由的id
+          uri: lb://ytoj-backend-question-service
+          predicates: # 路由的匹配条件
+            - Path=/api/question/**
+        - id: ytoj-backend-judge-service  # 第三个路由的id
+          uri: lb://ytoj-backend-judge-service
+          predicates: # 路由的匹配条件
+            - Path=/api/judge/**
+```
+
+### gateway聚合所有接口
+
+给gateway和提供服务的项目引入依赖的引入依赖：
+
+```
+<dependency>
+    <groupId>com.github.xiaoymin</groupId>
+    <artifactId>knife4j-openapi2-spring-boot-starter</artifactId>
+    <version>4.3.0</version>
+</dependency>
+```
+
+引入redis
+
+```xml
+<!-- redis -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-redis</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.session</groupId>
+    <artifactId>spring-session-data-redis</artifactId>
+</dependency>
+```
+
+### 使用 gateway处理跨域
+
+```java
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import org.springframework.web.util.pattern.PathPatternParser;
+
+import java.util.Arrays;
+
+// 处理跨域
+@Configuration
+public class CorsConfig {
+
+    @Bean
+    public CorsWebFilter corsFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedMethod("*");
+        config.setAllowCredentials(true);
+        // todo 实际改为线上真实域名、本地域名
+        config.setAllowedOriginPatterns(Arrays.asList("*"));
+        config.addAllowedHeader("*");
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource(new PathPatternParser());
+        source.registerCorsConfiguration("/**", config);
+        return new CorsWebFilter(source);
+    }
+}
+```
+
+### gateway拦截内部调用请求
+
+```java
+package com.yt.ytojbackendgateway.filter;
+
+import cn.hutool.core.text.AntPathMatcher;
+import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.core.Ordered;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.stereotype.Component;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import java.nio.charset.StandardCharsets;
+
+/**
+ * @Author: YT
+ * @Description: 全局拦截器
+ * @DateTime: 2023/9/26 - 20:02
+ */
+@Component
+public class GlobalAuthFilter implements GlobalFilter, Ordered {
+
+    private AntPathMatcher antPathMatcher = new AntPathMatcher();
+
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        ServerHttpRequest request = exchange.getRequest();
+        String path = request.getURI().getPath();
+        // 判断路径中是否包含 inner
+        if (antPathMatcher.match("**/inner/**", path)) {
+            ServerHttpResponse response = exchange.getResponse();
+            response.setStatusCode(HttpStatus.FORBIDDEN);
+            DataBufferFactory dataBufferFactory = response.bufferFactory();
+            DataBuffer dataBuffer = dataBufferFactory.wrap("无权限".getBytes(StandardCharsets.UTF_8));
+            return response.writeWith(Mono.just(dataBuffer));
+        }
+        return chain.filter(exchange);
+    }
+
+
+    @Override
+    public int getOrder() {
+        return 0;
+    }
+}
+```

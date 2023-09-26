@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yt.ytojbackend.common.ErrorCode;
 import com.yt.ytojbackend.constant.CommonConstant;
+import com.yt.ytojbackend.exception.BusinessException;
 import com.yt.ytojbackend.exception.ThrowUtils;
 import com.yt.ytojbackend.judge.JudgeService;
 import com.yt.ytojbackend.model.dto.questionsubmit.QuestionSubmitAddRequest;
@@ -23,6 +24,7 @@ import com.yt.ytojbackend.utils.SqlUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -136,6 +138,20 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
                 .collect(Collectors.toList());
         questionSubmitVOPage.setRecords(questionSubmitVOList);
         return questionSubmitVOPage;
+    }
+
+    @Override
+    public Page<QuestionSubmitVO> getMyQuestionSubmitByPage(QuestionSubmitQueryRequest questionSubmitQueryRequest, HttpServletRequest request) {
+        // 多做一层权限校验
+        questionSubmitQueryRequest.setUserId(null);
+        QueryWrapper<QuestionSubmit> queryWrapper = this.getQueryWrapper(questionSubmitQueryRequest);
+        User loginUser = userService.getLoginUser(request);
+        if (loginUser == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        queryWrapper.lambda().eq(QuestionSubmit::getUserId, loginUser.getId());
+        Page<QuestionSubmit> questionSubmitPage = this.page(new Page<>(questionSubmitQueryRequest.getCurrent(), questionSubmitQueryRequest.getPageSize()), queryWrapper);
+        return this.getQuestionSubmitVOPage(questionSubmitPage, loginUser);
     }
 }
 

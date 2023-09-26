@@ -57,4 +57,10 @@ public interface QuestionSubmitService extends IService<QuestionSubmit> {
      */
     Page<QuestionSubmitVO> getQuestionSubmitVOPage(Page<QuestionSubmit> questionPage, User loginUser);
 
+    /**
+     * 分页获取我的提交记录
+     * @param questionSubmitQueryRequest
+     * @return
+     */
+    Page<QuestionSubmitVO> getMyQuestionSubmitByPage(QuestionSubmitQueryRequest questionSubmitQueryRequest, HttpServletRequest request);
 }

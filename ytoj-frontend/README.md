@@ -20,5 +20,10 @@ yarn build
 yarn lint
 ```
 
+### 根据后端地址生成前端调用
+```shell
+openapi --input http://localhost:8123/api/v2/api-docs --output ./generated --client axios
+```
+
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).

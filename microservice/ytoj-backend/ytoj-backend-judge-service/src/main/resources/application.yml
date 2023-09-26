@@ -1,0 +1,67 @@
+spring:
+  application:
+    name: ytoj-backend-judge-service
+  cloud:
+    nacos:
+      serverAddr: 127.0.0.1:8848
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  profiles:
+    active: dev
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  session:
+    store-type: redis
+    timeout: 2592000
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/db_ytoj
+    username: root
+    password: 1111
+  redis:
+    database: 1
+    host: localhost
+    port: 6379
+    timeout: 5000
+  servlet:
+    multipart:
+      max-file-size: 10MB
+  liquibase:
+    enabled: false
+server:
+  address: 0.0.0.0
+  port: 8104
+  servlet:
+    context-path: /api/judge
+    session:
+      cookie:
+        max-age: 2592000
+        path: /api
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: false
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: isDelete
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+# minio ??
+minio:
+  endpoint: http://127.0.0.1:9000
+  accessKey: oj-project-user
+  secretKey: password
+  bucketName: oj-object-bucket
+codesandbox:
+  type: remote
+knife4j:
+  enable: true

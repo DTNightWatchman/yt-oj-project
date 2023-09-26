@@ -1,10 +1,8 @@
 import { RouteRecordRaw } from "vue-router";
-import AdminView from "@/views/AdminView.vue";
 import NoAuthView from "@/views/NoAuthView.vue";
 import ACCESS_ENUM from "@/access/accessEnum";
 import UserLoginView from "@/views/user/UserLoginView.vue";
 import UserRegisterView from "@/views/user/UserRegisterView.vue";
-import HelloWorld from "@/components/HelloWorld.vue";
 import AddQuestionView from "@/views/question/AddQuestionView.vue";
 import ManageQuestionView from "@/views/question/ManageQuestionView.vue";
 import QuestionsView from "@/views/question/QuestionsView.vue";
@@ -44,7 +42,6 @@ export const routes: Array<RouteRecordRaw> = [
     component: AddQuestionView,
     meta: {
       access: ACCESS_ENUM.ADMIN,
-      hideInMenu: true,
     },
   },
   {
@@ -75,19 +72,6 @@ export const routes: Array<RouteRecordRaw> = [
     path: "/questions",
     name: "题目",
     component: QuestionsView,
-  },
-  {
-    path: "/hello",
-    name: "hello",
-    component: HelloWorld,
-  },
-  {
-    path: "/admin",
-    name: "管理员页面",
-    component: AdminView,
-    meta: {
-      access: ACCESS_ENUM.ADMIN,
-    },
   },
   {
     path: "/noAuth",
