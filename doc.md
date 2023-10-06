@@ -1007,3 +1007,9 @@ myMessageProducer.sendMessage("submit_service_exchange","submit_service_routingK
 
 ```
 
+## 2023-9-24
+
+功能基本完成
+
+后续需要上线的时候需要微调docker容器中的执行代码
+
