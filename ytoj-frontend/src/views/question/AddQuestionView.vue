@@ -70,10 +70,14 @@
               :key="index"
               :style="{ minWidth: '400px', marginRight: '20px' }"
             >
-              <a-input
+              <a-textarea
                 v-model="judgeCaseItem.input"
                 placeholder="请输入测试输入用例"
               />
+              <!--              <a-input-->
+              <!--                v-model="judgeCaseItem.input"-->
+              <!--                placeholder="请输入测试输入用例"-->
+              <!--              />-->
             </a-form-item>
 
             <a-form-item
@@ -82,9 +86,9 @@
               :key="index"
               :style="{ minWidth: '400px' }"
             >
-              <a-input
+              <a-textarea
                 v-model="judgeCaseItem.output"
-                placeholder="请输入测试输出用例"
+                placeholder="请输入测试输入用例"
               />
             </a-form-item>
             <a-button
@@ -210,7 +214,7 @@ const doSubmit = async () => {
   if (updatePage) {
     try {
       const res = await QuestionControllerService.updateQuestionUsingPost(
-        form.value as any
+        form.value
       );
       if (res.code === 0) {
         message.success("更新成功");

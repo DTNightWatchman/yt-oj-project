@@ -27,7 +27,6 @@ public class QuestionInfoVO implements Serializable {
     /**
      * id
      */
-    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     /**

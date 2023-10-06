@@ -19,7 +19,7 @@ import static com.yt.ytojbackendjudgeservice.rabbitmq.InitRabbitMq.doInit;
 public class YtojBackendJudgeServiceApplication {
 
     public static void main(String[] args) {
-        doInit();
+        //doInit();
         SpringApplication.run(YtojBackendJudgeServiceApplication.class, args);
     }
 
