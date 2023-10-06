@@ -1,17 +1,53 @@
 package com.yt.ytojcodesandbox.utils;
 
+import cn.hutool.core.util.StrUtil;
 import com.yt.ytojcodesandbox.model.ExecuteMessage;
-import org.apache.catalina.LifecycleState;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.StopWatch;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProcessUtils {
+
+    public static ExecuteMessage runInteractProcessAndGetMessage(Process process, String opName, String args) {
+        try {
+            ExecuteMessage executeMessage = new ExecuteMessage();
+
+            // 向控制台写入程序
+            OutputStream outputStream = process.getOutputStream();
+
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
+            String[] s = args.split(" |\n"); // 同时以空格或者回车进行切分
+            outputStreamWriter.write(StrUtil.join("\n", s) + "\n");
+            // 结束输入
+            outputStreamWriter.flush();
+            outputStreamWriter.close();
+
+            InputStream inputStream = process.getInputStream();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            StringBuilder compileOutputStringBuilder = new StringBuilder();
+
+            String compileOutputLine = null;
+            while (true) {
+                if ((compileOutputLine = bufferedReader.readLine()) == null) {
+                    break;
+                }
+
+                compileOutputStringBuilder.append(compileOutputLine);
+            }
+            executeMessage.setMessage(compileOutputStringBuilder.toString());
+
+            outputStream.close();
+            inputStream.close();
+            process.destroy();
+            return executeMessage;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 
     public static ExecuteMessage runProcessAndGetMessage(Process process, String opName) throws IOException, InterruptedException {

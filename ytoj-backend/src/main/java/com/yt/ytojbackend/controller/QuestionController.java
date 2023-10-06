@@ -18,6 +18,7 @@ import com.yt.ytojbackend.model.entity.Question;
 import com.yt.ytojbackend.model.entity.QuestionSubmit;
 import com.yt.ytojbackend.model.entity.User;
 import com.yt.ytojbackend.model.vo.QuestionInfoVO;
+import com.yt.ytojbackend.model.vo.QuestionShowVO;
 import com.yt.ytojbackend.model.vo.QuestionSubmitVO;
 import com.yt.ytojbackend.model.vo.QuestionVO;
 import com.yt.ytojbackend.service.QuestionService;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 题目接口
@@ -188,6 +190,26 @@ public class QuestionController {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
         return ResultUtils.success(questionService.getQuestionVO(question, request));
+    }
+
+    /**
+     * 分页获取列表（列表展示类）
+     *
+     * @param questionQueryRequest
+     * @return
+     */
+    @PostMapping("/list/page/show/vo")
+    public BaseResponse<Page<QuestionShowVO>> listQuestionShowVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest) {
+        long current = questionQueryRequest.getCurrent();
+        long size = questionQueryRequest.getPageSize();
+        // 限制爬虫
+        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
+        Page<Question> questionPage = questionService.page(new Page<>(current, size),
+                questionService.getQueryWrapper(questionQueryRequest));
+        Page<QuestionShowVO> questionShowVOPage = new Page<>(questionPage.getCurrent(), questionPage.getSize());
+        List<QuestionShowVO> questionShowVOList = questionPage.getRecords().stream().map(QuestionShowVO::objToVo).collect(Collectors.toList());
+        questionShowVOPage.setRecords(questionShowVOList);
+        return ResultUtils.success(questionShowVOPage);
     }
 
     /**

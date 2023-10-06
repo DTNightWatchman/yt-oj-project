@@ -29,7 +29,7 @@ public class JavaNativeCodeSandbox implements CodeSandbox{
 
     private static final String GLOBAL_JAVA_CLASS_NAME = "Main.java";
 
-    private static final long TIME_OUT = 5000L;
+    private static final long TIME_OUT = 50000L;
 
     private static final List<String> blackList = Arrays.asList("Files", "exec");
 
@@ -47,8 +47,8 @@ public class JavaNativeCodeSandbox implements CodeSandbox{
     public static void main(String[] args) {
         JavaNativeCodeSandbox javaNativeCodeSandbox = new JavaNativeCodeSandbox();
         ExecuteCodeRequest executeCodeRequest = new ExecuteCodeRequest();
-        executeCodeRequest.setInputList(Arrays.asList("1 2", "2 3"));
-        String code = ResourceUtil.readStr("testcode/unsafecode/Main.java", StandardCharsets.UTF_8);
+        executeCodeRequest.setInputList(Arrays.asList("abc\ndef", "def\nefg"));
+        String code = ResourceUtil.readStr("testcode/simplecomputeargs/Main.java", StandardCharsets.UTF_8);
 
         executeCodeRequest.setCode(code);
         executeCodeRequest.setLanguage("java");
@@ -72,6 +72,7 @@ public class JavaNativeCodeSandbox implements CodeSandbox{
             return executeCodeResponse;
         }
 
+        // todo 语言
         String language = executeCodeRequest.getLanguage();
 
         String userDir = System.getProperty("user.dir");
@@ -97,7 +98,7 @@ public class JavaNativeCodeSandbox implements CodeSandbox{
 
         // 执行代码得到输出结果
         List<ExecuteMessage> executeMessageList = new ArrayList<>();
-        int ifLongTime = 0;
+        int ifLongTime = 1;
         for (String inputArgs : inputList) {
             String runCmd = String.format("java -Xmx256m -Dfile.encoding=UTF-8 -cp %s;%s -Djava.security.manager=%s Main %s",
                     userCodeParentPath, SECURITY_MANAGER_PATH, SECURITY_MANAGER_CLASS_NAME, inputArgs);
@@ -106,33 +107,33 @@ public class JavaNativeCodeSandbox implements CodeSandbox{
                 Process process = Runtime.getRuntime().exec(runCmd);
                 // 超时控制
                 FutureTask<Integer> futureTask = new FutureTask<>(() -> {
-                    try {
-                        Thread.sleep(TIME_OUT);
-                        if (process.isAlive()) {
-                            process.destroy();
-                            System.out.println("超时了，中断");
-                            // 有一个中断就不执行后面可能有问题的输入了
+                    long startTime = System.currentTimeMillis();
+                    while (System.currentTimeMillis() - startTime < TIME_OUT) {
+                        if (!process.isAlive()) {
+                            // 结束了
                             return 1;
                         }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
                     }
+                    System.out.println("超时了，中断");
+                    process.destroy();
                     return 0;
                 });
+
+                //ExecuteMessage executeMessage = ProcessUtils.runProcessAndGetMessage(process, "运行");
                 new Thread(futureTask).start();
+                ExecuteMessage executeMessage = ProcessUtils.runInteractProcessAndGetMessage(process, "运行", inputArgs);
                 Integer res = futureTask.get();
-                if (res == 1) {
-                    ifLongTime = 1;
+                if (res == 0) {
+                    ifLongTime = 0;
                     break;
                 }
-                ExecuteMessage executeMessage = ProcessUtils.runProcessAndGetMessage(process, "运行");
                 System.out.println(executeMessage);
                 executeMessageList.add(executeMessage);
             } catch (IOException | InterruptedException | ExecutionException e) {
                 return getErrorResponse(e);
             }
         }
-        if (ifLongTime == 1) {
+        if (ifLongTime == 0) {
             executeCodeResponse.setStatus(3);
             executeCodeResponse.setMessage("代码执行时间过长");
             return executeCodeResponse;

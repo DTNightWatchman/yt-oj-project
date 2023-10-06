@@ -30,8 +30,8 @@ public class JavaLanguageJudgeStrategy implements JudgeStrategy{
         JudgeInfoMessageEnum judgeInfoMessageEnum = JudgeInfoMessageEnum.WAITING;
         JudgeInfo judgeInfoResponse = new JudgeInfo();
         // 判断题目限制
-        Long memory = judgeInfo.getMemory();
-        Long time = judgeInfo.getTime();
+        Long memory = judgeInfo != null ? judgeInfo.getMemory() : 0;
+        Long time = judgeInfo != null ? judgeInfo.getTime() : 0;
         judgeInfoResponse.setMemory(memory);
         judgeInfoResponse.setTime(time);
         Boolean isEqual = judgeOutputList(inputList, outputList, judgeContext.getJudgeCaseList());

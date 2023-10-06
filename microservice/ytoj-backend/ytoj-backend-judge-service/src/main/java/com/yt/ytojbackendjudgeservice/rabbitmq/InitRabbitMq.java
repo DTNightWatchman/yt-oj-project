@@ -16,6 +16,10 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 public class InitRabbitMq {
 
+    public static void main(String[] args) {
+        doInit();
+    }
+
     public static void doInit() {
         try {
             ConnectionFactory factory = new ConnectionFactory();

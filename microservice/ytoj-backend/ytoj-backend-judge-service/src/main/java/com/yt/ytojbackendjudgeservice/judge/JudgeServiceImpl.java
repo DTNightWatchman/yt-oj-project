@@ -102,6 +102,7 @@ public class JudgeServiceImpl implements JudgeService {
 
         QuestionSubmitVO questionSubmitVO = new QuestionSubmitVO();
         questionSubmitVO.setJudgeInfo(judgeInfo);
+        questionSubmitVO.setQuestionId(questionId);
         return questionSubmitVO;
     }
 
