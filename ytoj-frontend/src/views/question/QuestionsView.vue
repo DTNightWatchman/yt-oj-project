@@ -37,12 +37,6 @@
           </a-tag>
         </a-space>
       </template>
-      <template #acceptedRate="{ record }">
-        {{
-          `${record.submitNum ? record.acceptedNum / record.submitNum : "0"}%
-          (${record.acceptedNum}/${record.submitNum})`
-        }}
-      </template>
       <template #createTime="{ record }">
         {{ record.createTime }}
       </template>
@@ -80,9 +74,10 @@ const searchParams = ref<QuestionQueryRequest>({
 
 const loadData = async () => {
   try {
-    const res = await QuestionControllerService.listQuestionVoByPageUsingPost(
-      searchParams.value
-    );
+    const res =
+      await QuestionControllerService.listQuestionShowVoByPageUsingPost(
+        searchParams.value
+      );
     if (res.code === 0) {
       dataList.value = res.data.records;
       total.value = res.data.total;
@@ -108,7 +103,6 @@ watchEffect(() => {
 onMounted(() => {
   loadData();
 });
-//{id: "1696167116826931202", title: "A + B", content: "题目内容", tags: ["A", "B"],…}
 const columns = [
   {
     title: "题号",
@@ -124,7 +118,7 @@ const columns = [
   },
   {
     title: "通过率",
-    slotName: "acceptedRate",
+    dataIndex: "acceptedRate",
   },
   {
     title: "创建时间",

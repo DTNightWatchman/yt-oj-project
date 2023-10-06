@@ -986,3 +986,24 @@ public class GlobalAuthFilter implements GlobalFilter, Ordered {
     }
 }
 ```
+
+## 2023-9-23
+
+设置一个消息队列，专门用来修改数据库中的提交数和通过数
+
+```json
+{
+    questionId: "xxxx",
+    ifAccepted: "1" // 0 未通过，1 通过
+}
+```
+
+```
+// todo 异步修改数据库中的数据（通过消息队列进行数据的消费）
+Map<String, Object> messageMap = new HashMap<>();
+messageMap.put("questionId", questionId);
+messageMap.put("ifAccepted", 1);
+myMessageProducer.sendMessage("submit_service_exchange","submit_service_routingKey", );
+
+```
+

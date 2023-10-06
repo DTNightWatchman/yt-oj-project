@@ -50,5 +50,12 @@ public interface QuestionFeignClient {
     @PostMapping("question_submit/update")
     boolean updateQuestionSubmitById(@RequestBody QuestionSubmit questionSubmit);
 
-
+    /**
+     * 修改
+     * @param questionId
+     * @param ifAccepted
+     * @return
+     */
+    @GetMapping("/question_submit/updateSubmitNumAndAcceptedNum")
+    boolean updateSubmitNumAndAcceptedNum(@RequestParam("questionId") long questionId, @RequestParam("ifAccepted")  int ifAccepted);
 }

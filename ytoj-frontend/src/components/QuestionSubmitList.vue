@@ -47,6 +47,9 @@
       }"
       @page-change="onPageChange"
     >
+      <template #status="{ record }">
+        {{ statuses[record.status] }}
+      </template>
     </a-table>
   </div>
 </template>
@@ -74,6 +77,8 @@ const form = ref<QuestionSubmitQueryRequest>({
   // status: 1,
   questionId: route.params?.id as unknown as number,
 });
+
+const statuses = ["等待中", "判题中", "结束", "失败"];
 
 const loadData = async () => {
   try {
@@ -125,7 +130,7 @@ const columns = [
   },
   {
     title: "判题状态",
-    dataIndex: "status",
+    slotName: "status",
   },
   {
     title: "提交时间",

@@ -29,6 +29,16 @@ export const routes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: "/about",
+    name: "关于我的",
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
+    meta: {
+      access: ACCESS_ENUM.USER,
+      hideInMenu: true,
+    },
+  },
+  {
     path: "/manage/question",
     name: "管理题目",
     component: ManageQuestionView,
@@ -72,6 +82,9 @@ export const routes: Array<RouteRecordRaw> = [
     path: "/questions",
     name: "题目",
     component: QuestionsView,
+    meta: {
+      hideInMenu: true,
+    },
   },
   {
     path: "/noAuth",
@@ -80,14 +93,5 @@ export const routes: Array<RouteRecordRaw> = [
     meta: {
       hideInMenu: true,
     },
-  },
-  {
-    path: "/about",
-    name: "关于我的",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
   },
 ];

@@ -55,15 +55,18 @@
 
           <a-button v-else style="margin-right: 10px">未登录账号</a-button>
           <template #content>
-            <a-doption>Option 1</a-doption>
-            <a-doption>Option 2</a-doption>
-            <a-doption>Option 3</a-doption>
+            <a-doption>
+              <router-link class="router-link-exact-active" to="/about"
+                >关于我的
+              </router-link>
+            </a-doption>
             <a-dgroup>
               <a-doption
                 v-if="
                   store.state?.user?.loginUser.userName &&
                   store.state?.user?.loginUser.userName !== '未登录'
                 "
+                @click="doLogout"
                 >退出登录
               </a-doption>
               <a-doption v-else>现在登录</a-doption>
@@ -82,6 +85,7 @@ import { computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import checkAccess from "@/access/checkAccess";
 import accessEnum from "@/access/accessEnum";
+import { UserControllerService } from "../../generated";
 
 const store = useStore();
 const router = useRouter();
@@ -120,6 +124,11 @@ const doMenuClick = (key: string) => {
   });
 };
 
+const doLogout = async () => {
+  await UserControllerService.userLogoutUsingPost();
+  router.push("/user/login");
+};
+
 console.log(store.state);
 </script>
 
@@ -147,5 +156,11 @@ img {
 
 avatar:hover {
   cursor: pointer;
+}
+
+/* 移除<router-link>的下划线 */
+.router-link-exact-active {
+  text-decoration: none;
+  color: black;
 }
 </style>
